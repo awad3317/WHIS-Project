@@ -3,8 +3,9 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class ImageService
 {
@@ -22,20 +23,26 @@ class ImageService
 
         $image->storeAs($folder, $filename, 'public');
        
-        return $filePath;
+        return 'storage'. '/' . $filePath;
     }
 
-    public function deleteImage(?string $imagePath): bool
-    {
-        if (empty($imagePath)) {
-            return false;
-        }
 
-        $storagePath = str_replace('storage/', '', $imagePath);
-        if (Storage::disk('public')->exists($storagePath)) {
-            return Storage::disk('public')->delete($storagePath);
-        }
+public function deleteImage(?string $imagePath): bool
+{
+    if (empty($imagePath)) {
         return false;
     }
+    try {
+        $cleanPath = str_replace('storage/', '', $imagePath);
+        $filePath = public_path('storage/' . $cleanPath);
+
+        if (file_exists($filePath)) {
+            return unlink($filePath);
+        }
+        return false;
+    } catch (\Exception $e) {
+        return false;
+    }
+}
 
 }
