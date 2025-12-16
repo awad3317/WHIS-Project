@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://beyytat.com/sitemap.xml
